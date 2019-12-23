@@ -15,6 +15,64 @@ func NewStorage(db *sql.DB) *Storage {
 	}
 }
 
+func (s *Storage) Find(ctx context.Context, dealerID uint64, dealer *Dealer) error {
+	q := `
+		SELECT n_dealer as id, dealer_name as name, address, phone, status_id, note
+		FROM dealers
+		WHERE n_dealer = $1
+	`
+
+	err := s.db.QueryRow(q, dealerID).Scan(&dealer.ID, &dealer.Name, &dealer.Address, &dealer.Phone, &dealer.StatusID, &dealer.Note)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *Storage) Create(ctx context.Context, dealer Dealer) error {
+	q := `
+		INSERT INTO dealers (n_dealer, dealer_name, address, phone, status_id, note)
+		VALUES ($1, $2, $3, $4, $5, $6)
+	`
+
+	_, err := s.db.ExecContext(ctx, q, dealer.ID, dealer.Name, dealer.Address, dealer.Phone, dealer.StatusID, dealer.Note)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *Storage) Delete(ctx context.Context, dealerID uint64) error {
+	q := `
+		DELETE FROM dealers WHERE n_dealer = $1
+	`
+
+	_, err := s.db.ExecContext(ctx, q, dealerID)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+func (s *Storage) Update(ctx context.Context, dealerID uint64, dealer Dealer) error {
+	//q := `
+	//	UPDATE ... SET .... WHERE n_dealer = $1
+	//`
+
+	//_, err := s.db.ExecContext(ctx, q, dealer.ID, dealer.Name, dealer.Address, dealer.Phone, dealer.StatusID, dealer.Note)
+	//
+	//if err != nil {
+	//	return err
+	//}
+
+	return nil
+}
+
 func (s *Storage) List(ctx context.Context) ([]Dealer, error) {
 	q := `
 		SELECT n_dealer as id, dealer_name as name, address, phone, status_id, note 

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/dimitrenkoda/sales-web/core-api/pkg/salemaps"
 
@@ -29,6 +30,14 @@ import (
 	"github.com/gorilla/mux"
 )
 
+func UnprocessableEntity(w http.ResponseWriter, err error) {
+	w.WriteHeader(http.StatusUnprocessableEntity)
+
+	_ = json.NewEncoder(w).Encode(map[string]interface{}{
+		"error": err.Error(),
+	})
+}
+
 func InternalServerError(w http.ResponseWriter, err error) {
 	w.WriteHeader(http.StatusInternalServerError)
 
@@ -37,7 +46,16 @@ func InternalServerError(w http.ResponseWriter, err error) {
 	})
 }
 
+func NotFound(w http.ResponseWriter) {
+	w.WriteHeader(http.StatusNotFound)
+}
+
 func Ok(w http.ResponseWriter, body interface{}) {
+	if body == nil {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
 	_ = json.NewEncoder(w).Encode(body)
 }
 
@@ -92,6 +110,96 @@ func main() {
 			"dealers": dealersList,
 		})
 	}).Methods(http.MethodGet)
+
+	router.HandleFunc("/dealers", func(w http.ResponseWriter, r *http.Request) {
+		var dealer dealers.Dealer
+
+		err := json.NewDecoder(r.Body).Decode(&dealer)
+
+		if err != nil {
+			UnprocessableEntity(w, err)
+			return
+		}
+
+		err = dealersStorage.Create(r.Context(), dealer)
+
+		if err != nil {
+			InternalServerError(w, err)
+			return
+		}
+
+		Ok(w, dealer)
+	}).Methods(http.MethodPost)
+	router.HandleFunc("/dealers/{dealer_id}", func(w http.ResponseWriter, r *http.Request) {
+		args := mux.Vars(r)
+
+		dealerID, err := strconv.ParseUint(args["dealer_id"], 10, 64)
+
+		if err != nil {
+			UnprocessableEntity(w, err)
+			return
+		}
+
+		var dealer dealers.Dealer
+
+		err = dealersStorage.Find(r.Context(), dealerID, &dealer)
+
+		if err == sql.ErrNoRows {
+			NotFound(w)
+			return
+		} else if err != nil {
+			InternalServerError(w, err)
+			return
+		}
+
+		Ok(w, dealer)
+	}).Methods(http.MethodGet)
+	router.HandleFunc("/dealers/{dealer_id}", func(w http.ResponseWriter, r *http.Request) {
+		args := mux.Vars(r)
+
+		dealerID, err := strconv.ParseUint(args["dealer_id"], 10, 64)
+
+		if err != nil {
+			UnprocessableEntity(w, err)
+			return
+		}
+
+		var dealer dealers.Dealer
+
+		err = json.NewDecoder(r.Body).Decode(&dealer)
+
+		if err != nil {
+			UnprocessableEntity(w, err)
+			return
+		}
+
+		err = dealersStorage.Update(r.Context(), dealerID, dealer)
+
+		if err != nil {
+			InternalServerError(w, err)
+			return
+		}
+
+		Ok(w, dealer)
+	}).Methods(http.MethodPut)
+	router.HandleFunc("/dealers/{dealer_id}", func(w http.ResponseWriter, r *http.Request) {
+		args := mux.Vars(r)
+
+		dealerID, err := strconv.ParseUint(args["dealer_id"], 10, 64)
+
+		if err != nil {
+			UnprocessableEntity(w, err)
+			return
+		}
+		err = dealersStorage.Delete(r.Context(), dealerID)
+
+		if err != nil {
+			InternalServerError(w, err)
+			return
+		}
+
+		Ok(w, nil)
+	}).Methods(http.MethodDelete)
 
 	router.HandleFunc("/deals", func(w http.ResponseWriter, r *http.Request) {
 		dealsList, err := dealsStorage.List(r.Context())
