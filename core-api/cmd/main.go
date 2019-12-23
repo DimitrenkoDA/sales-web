@@ -7,6 +7,22 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/dimitrenkoda/sales-web/core-api/pkg/salemaps"
+
+	"github.com/dimitrenkoda/sales-web/core-api/pkg/statuses"
+
+	"github.com/dimitrenkoda/sales-web/core-api/pkg/subs"
+
+	"github.com/dimitrenkoda/sales-web/core-api/pkg/salemans"
+
+	"github.com/dimitrenkoda/sales-web/core-api/pkg/products"
+
+	"github.com/dimitrenkoda/sales-web/core-api/pkg/product_groups"
+
+	"github.com/dimitrenkoda/sales-web/core-api/pkg/pricelist"
+
+	"github.com/dimitrenkoda/sales-web/core-api/pkg/deals"
+
 	_ "github.com/lib/pq"
 
 	"github.com/dimitrenkoda/sales-web/core-api/pkg/dealers"
@@ -53,6 +69,14 @@ func main() {
 	}
 
 	dealersStorage := dealers.NewStorage(db)
+	dealsStorage := deals.NewStorage(db)
+	pricelistStorage := pricelist.NewStorage(db)
+	productGroupStorage := product_groups.NewStorage(db)
+	productsStorage := products.NewStorage(db)
+	salemansStorage := salemans.NewStorage(db)
+	subsStorage := subs.NewStorage(db)
+	statusesStorage := statuses.NewStorage(db)
+	salemapsStorage := salemaps.NewStorage(db)
 
 	router := mux.NewRouter()
 
@@ -66,6 +90,110 @@ func main() {
 
 		Ok(w, map[string]interface{}{
 			"dealers": dealersList,
+		})
+	}).Methods(http.MethodGet)
+
+	router.HandleFunc("/deals", func(w http.ResponseWriter, r *http.Request) {
+		dealsList, err := dealsStorage.List(r.Context())
+
+		if err != nil {
+			InternalServerError(w, err)
+			return
+		}
+
+		Ok(w, map[string]interface{}{
+			"deals": dealsList,
+		})
+	}).Methods(http.MethodGet)
+
+	router.HandleFunc("/pricelist", func(w http.ResponseWriter, r *http.Request) {
+		pricelistList, err := pricelistStorage.List(r.Context())
+
+		if err != nil {
+			InternalServerError(w, err)
+			return
+		}
+
+		Ok(w, map[string]interface{}{
+			"pricelist": pricelistList,
+		})
+	}).Methods(http.MethodGet)
+
+	router.HandleFunc("/product_groups", func(w http.ResponseWriter, r *http.Request) {
+		productGroupList, err := productGroupStorage.List(r.Context())
+
+		if err != nil {
+			InternalServerError(w, err)
+			return
+		}
+
+		Ok(w, map[string]interface{}{
+			"product_groups": productGroupList,
+		})
+	}).Methods(http.MethodGet)
+
+	router.HandleFunc("/products", func(w http.ResponseWriter, r *http.Request) {
+		productsList, err := productsStorage.List(r.Context())
+
+		if err != nil {
+			InternalServerError(w, err)
+			return
+		}
+
+		Ok(w, map[string]interface{}{
+			"products": productsList,
+		})
+	}).Methods(http.MethodGet)
+
+	router.HandleFunc("/salemans", func(w http.ResponseWriter, r *http.Request) {
+		salemansList, err := salemansStorage.List(r.Context())
+
+		if err != nil {
+			InternalServerError(w, err)
+			return
+		}
+
+		Ok(w, map[string]interface{}{
+			"salemans": salemansList,
+		})
+	}).Methods(http.MethodGet)
+
+	router.HandleFunc("/subs", func(w http.ResponseWriter, r *http.Request) {
+		subsList, err := subsStorage.List(r.Context())
+
+		if err != nil {
+			InternalServerError(w, err)
+			return
+		}
+
+		Ok(w, map[string]interface{}{
+			"subs": subsList,
+		})
+	}).Methods(http.MethodGet)
+
+	router.HandleFunc("/statuses", func(w http.ResponseWriter, r *http.Request) {
+		statusesList, err := statusesStorage.List(r.Context())
+
+		if err != nil {
+			InternalServerError(w, err)
+			return
+		}
+
+		Ok(w, map[string]interface{}{
+			"statuses": statusesList,
+		})
+	}).Methods(http.MethodGet)
+
+	router.HandleFunc("/salemaps", func(w http.ResponseWriter, r *http.Request) {
+		salemapsList, err := salemapsStorage.List(r.Context())
+
+		if err != nil {
+			InternalServerError(w, err)
+			return
+		}
+
+		Ok(w, map[string]interface{}{
+			"salemaps": salemapsList,
 		})
 	}).Methods(http.MethodGet)
 
