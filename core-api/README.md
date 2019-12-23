@@ -1,5 +1,10 @@
 ## Core API
 
+## Installation
+
+- Install Go 1.13: https://golang.org/dl
+
+
 ## Development
 
 First of all you should create the database:
