@@ -20,3 +20,9 @@ Now we can build and start the server. This project requires Go 1.13. In order t
 ```
 go run cmd/main.go
 ```
+
+Check using:
+
+```
+curl -v -XGET http://localhost:8080/dealers | json_pp
+```
