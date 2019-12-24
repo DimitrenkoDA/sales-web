@@ -1,0 +1,26 @@
+.tabs .tab {
+  padding: 20px;
+  display: none;
+}
+
+.tabs .tabs-switcher {
+  display: flex;
+}
+
+.tabs .tabs-switcher .tabs-switcher-item {
+  cursor: pointer;
+  border: 1px solid #000;
+  border-radius: 3px;
+  flex-grow: 1;
+  margin: 0px 10px;
+  padding: 5px;
+}
+
+.tabs .tabs-switcher .tabs-switcher-item.active {
+  background-color: grey;
+  color: #ffffff;
+}
+
+.tabs .tab.active {
+  display: block;
+}
