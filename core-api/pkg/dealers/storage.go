@@ -60,16 +60,14 @@ func (s *Storage) Delete(ctx context.Context, dealerID uint64) error {
 	return nil
 }
 func (s *Storage) Update(ctx context.Context, dealerID uint64, dealer Dealer) error {
-	//q := `
-	//	UPDATE ... SET .... WHERE n_dealer = $1
-	//`
+	q := `
+		UPDATE dealers SET dealer_name = $2, address = $3, phone = $4, status_id = $5, note = $6 WHERE n_dealer = $1
+	`
+	_, err := s.db.ExecContext(ctx, q, dealer.ID, dealer.Name, dealer.Address, dealer.Phone, dealer.StatusID, dealer.Note)
 
-	//_, err := s.db.ExecContext(ctx, q, dealer.ID, dealer.Name, dealer.Address, dealer.Phone, dealer.StatusID, dealer.Note)
-	//
-	//if err != nil {
-	//	return err
-	//}
-
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

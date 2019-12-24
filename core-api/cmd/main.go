@@ -214,6 +214,96 @@ func main() {
 		})
 	}).Methods(http.MethodGet)
 
+	router.HandleFunc("/deals", func(w http.ResponseWriter, r *http.Request) {
+		var deal deals.Deal
+
+		err := json.NewDecoder(r.Body).Decode(&deal)
+
+		if err != nil {
+			UnprocessableEntity(w, err)
+			return
+		}
+
+		err = dealsStorage.Create(r.Context(), deal)
+
+		if err != nil {
+			InternalServerError(w, err)
+			return
+		}
+
+		Ok(w, deal)
+	}).Methods(http.MethodPost)
+	router.HandleFunc("/deals/{deal_id}", func(w http.ResponseWriter, r *http.Request) {
+		args := mux.Vars(r)
+
+		dealID, err := strconv.ParseUint(args["deal_id"], 10, 64)
+
+		if err != nil {
+			UnprocessableEntity(w, err)
+			return
+		}
+
+		var deal deals.Deal
+
+		err = dealsStorage.Find(r.Context(), dealID, &deal)
+
+		if err == sql.ErrNoRows {
+			NotFound(w)
+			return
+		} else if err != nil {
+			InternalServerError(w, err)
+			return
+		}
+
+		Ok(w, deal)
+	}).Methods(http.MethodGet)
+	router.HandleFunc("/deals/{deal_id}", func(w http.ResponseWriter, r *http.Request) {
+		args := mux.Vars(r)
+
+		dealID, err := strconv.ParseUint(args["deal_id"], 10, 64)
+
+		if err != nil {
+			UnprocessableEntity(w, err)
+			return
+		}
+
+		var deal deals.Deal
+
+		err = json.NewDecoder(r.Body).Decode(&deal)
+
+		if err != nil {
+			UnprocessableEntity(w, err)
+			return
+		}
+
+		err = dealsStorage.Update(r.Context(), dealID, deal)
+
+		if err != nil {
+			InternalServerError(w, err)
+			return
+		}
+
+		Ok(w, deal)
+	}).Methods(http.MethodPut)
+	router.HandleFunc("/deals/{deal_id}", func(w http.ResponseWriter, r *http.Request) {
+		args := mux.Vars(r)
+
+		dealID, err := strconv.ParseUint(args["deal_id"], 10, 64)
+
+		if err != nil {
+			UnprocessableEntity(w, err)
+			return
+		}
+		err = dealsStorage.Delete(r.Context(), dealID)
+
+		if err != nil {
+			InternalServerError(w, err)
+			return
+		}
+
+		Ok(w, nil)
+	}).Methods(http.MethodDelete)
+
 	router.HandleFunc("/pricelist", func(w http.ResponseWriter, r *http.Request) {
 		pricelistList, err := pricelistStorage.List(r.Context())
 
