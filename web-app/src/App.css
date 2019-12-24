@@ -1,3 +1,11 @@
+ * {
+  box-sizing: border-box;
+}
+
+.inner {
+  padding: 20px;
+}
+
 .container {
   padding: 25px;
 }
@@ -8,10 +16,19 @@
 }
 
 .table th {
-  text-align: left;
+  text-align: center;
 }
 
 .table th, .table td {
   border: 1px solid #000;
 }
+
+.values {
+  text-align: center;
+}
+
+.header {
+  background-color: bisque;
+}
+
 
