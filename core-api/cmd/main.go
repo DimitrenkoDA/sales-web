@@ -51,6 +51,9 @@ func NotFound(w http.ResponseWriter) {
 }
 
 func Ok(w http.ResponseWriter, body interface{}) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
 	if body == nil {
 		w.WriteHeader(http.StatusOK)
 		return
