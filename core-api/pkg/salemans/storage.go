@@ -32,7 +32,7 @@ func (s *Storage) ShowTop5(ctx context.Context) ([]Top5, error) {
 			WHERE CX.MAN_CODE = CH.MAN_CODE AND CH.PROD_ID = CZ.PROD_ID AND CH.DAT = CZ.DAT AND to_char(ch.sale_dat, 'yyyy') = to_char(current_date - 365, 'yyyy')
 			GROUP BY CX.saleman_name 
 			ORDER BY CASH DESC
-		  ) as JJ)AS LOL WHERE RANK <= 3) AS TOP 
+		  ) as JJ)AS LOL WHERE RANK <= 5) AS TOP 
 		ON LIST.CASH = TOP.CASH
 	`
 
@@ -76,7 +76,7 @@ func (s *Storage) UnsoldProduct(ctx context.Context, salemanName string, leftDat
 		return nil, err
 	}
 
-	var unsolds []Unsold
+	unsolds := []Unsold{}
 
 	for rows.Next() {
 		var unsold Unsold
