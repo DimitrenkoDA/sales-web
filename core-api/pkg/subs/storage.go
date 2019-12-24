@@ -22,7 +22,7 @@ func (s *Storage) Find(ctx context.Context, subID uint64, sub *Sub) error {
 		WHERE sub_id = $1
 	`
 
-	err := s.db.QueryRow(q, subID).Scan(&sub.ID, &sub.Name, &sub.Address, &sub.Phone, &sub.Note)
+	err := s.db.QueryRowContext(ctx, q, subID).Scan(&sub.ID, &sub.Name, &sub.Address, &sub.Phone, &sub.Note)
 
 	if err != nil {
 		return err
@@ -64,7 +64,7 @@ func (s *Storage) Update(ctx context.Context, subID uint64, sub Sub) error {
 	q := `
 		UPDATE subs SET sub_name = $2, address = $3, phone = $4, note = $5 WHERE sub_id = $1
 	`
-	_, err := s.db.ExecContext(ctx, q, sub.ID, sub.Name, sub.Address, sub.Phone, sub.Note)
+	_, err := s.db.ExecContext(ctx, q, subID, sub.Name, sub.Address, sub.Phone, sub.Note)
 
 	if err != nil {
 		return err

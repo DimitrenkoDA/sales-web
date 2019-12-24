@@ -22,7 +22,7 @@ func (s *Storage) Find(ctx context.Context, prodID uint64, product *Product) err
 		WHERE prod_id = $1
 	`
 
-	err := s.db.QueryRow(q, prodID).Scan(&product.ID, &product.Name, &product.Pincode, &product.ProductionDate, &product.PgID, &product.StatusID, &product.Note)
+	err := s.db.QueryRowContext(ctx, q, prodID).Scan(&product.ID, &product.Name, &product.Pincode, &product.ProductionDate, &product.PgID, &product.StatusID, &product.Note)
 
 	if err != nil {
 		return err
@@ -64,7 +64,7 @@ func (s *Storage) Update(ctx context.Context, prodID uint64, product Product) er
 	q := `
 		UPDATE deals SET prod_name = $2, pincode = $3, data_iz = $4, pg_id = $5, status_id = $6, note = $7 WHERE prod_id = $1
 	`
-	_, err := s.db.ExecContext(ctx, q, product.ID, product.Name, product.Pincode, product.ProductionDate, product.PgID, product.StatusID, product.Note)
+	_, err := s.db.ExecContext(ctx, q, prodID, product.Name, product.Pincode, product.ProductionDate, product.PgID, product.StatusID, product.Note)
 
 	if err != nil {
 		return err

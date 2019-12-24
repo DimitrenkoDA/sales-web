@@ -22,7 +22,7 @@ func (s *Storage) Find(ctx context.Context, statusID uint64, status *Status) err
 		WHERE status_id = $1
 	`
 
-	err := s.db.QueryRow(q, statusID).Scan(&status.ID, &status.StutusGroup, &status.Name, &status.Note)
+	err := s.db.QueryRowContext(ctx, q, statusID).Scan(&status.ID, &status.StutusGroup, &status.Name, &status.Note)
 
 	if err != nil {
 		return err
@@ -64,7 +64,7 @@ func (s *Storage) Update(ctx context.Context, dealID uint64, status Status) erro
 	q := `
 		UPDATE statuses SET status_group = $2, status_name = $3, note = $4 WHERE status_id = $1
 	`
-	_, err := s.db.ExecContext(ctx, q, status.ID, status.StutusGroup, status.Name, status.Note)
+	_, err := s.db.ExecContext(ctx, q, dealID, status.StutusGroup, status.Name, status.Note)
 
 	if err != nil {
 		return err

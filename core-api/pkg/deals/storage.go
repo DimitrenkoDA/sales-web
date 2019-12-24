@@ -22,7 +22,7 @@ func (s *Storage) Find(ctx context.Context, dealID uint64, deal *Deal) error {
 		WHERE n_deal = $1
 	`
 
-	err := s.db.QueryRow(q, dealID).Scan(&deal.ID, &deal.StartedAt, &deal.FinishedAt, &deal.Note, &deal.SubId)
+	err := s.db.QueryRowContext(ctx, q, dealID).Scan(&deal.ID, &deal.StartedAt, &deal.FinishedAt, &deal.Note, &deal.SubId)
 
 	if err != nil {
 		return err
@@ -64,7 +64,7 @@ func (s *Storage) Update(ctx context.Context, dealID uint64, deal Deal) error {
 	q := `
 		UPDATE deals SET data_start = $2, data_finish = $3, prim = $4, sub_id = $5 WHERE n_deal = $1
 	`
-	_, err := s.db.ExecContext(ctx, q, deal.ID, deal.StartedAt, deal.FinishedAt, deal.Note, deal.SubId)
+	_, err := s.db.ExecContext(ctx, q, dealID, deal.StartedAt, deal.FinishedAt, deal.Note, deal.SubId)
 
 	if err != nil {
 		return err

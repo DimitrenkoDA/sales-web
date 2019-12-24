@@ -22,7 +22,7 @@ func (s *Storage) Find(ctx context.Context, PgID uint64, productGroup *ProductGr
 		WHERE pg_id = $1
 	`
 
-	err := s.db.QueryRow(q, PgID).Scan(&productGroup.ID, &productGroup.Name, &productGroup.Note)
+	err := s.db.QueryRowContext(ctx, q, PgID).Scan(&productGroup.ID, &productGroup.Name, &productGroup.Note)
 
 	if err != nil {
 		return err
@@ -64,7 +64,7 @@ func (s *Storage) Update(ctx context.Context, PgID uint64, productGroup ProductG
 	q := `
 		UPDATE product_groups SET pg_name = $2, note = $3 WHERE pg_id = $1
 	`
-	_, err := s.db.ExecContext(ctx, q, productGroup.ID, productGroup.Name, productGroup.Note)
+	_, err := s.db.ExecContext(ctx, q, PgID, productGroup.Name, productGroup.Note)
 
 	if err != nil {
 		return err
