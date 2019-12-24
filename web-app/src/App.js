@@ -12,6 +12,7 @@ function App() {
   let [salemans, setSalemans] = useState([])
   let [salemaps, setSalemaps] = useState([])
   let [top5, setTop5] = useState([])
+  let [salemanName, setSalemanName] = useState("")
 
   useEffect(() => {
     fetch(BASE_DEALERS_URL).then(res => res.json()).then(json => {
@@ -42,6 +43,10 @@ function App() {
   }, [])
 
 
+  useEffect(() => {
+    fetch(`${BASE_SALEMANS_URL}/unsold?saleman_name=${salemanName}`)
+  }, [salemanName])
+
   return (
     <div className="container">
       <Tabs>
@@ -69,6 +74,12 @@ function App() {
             active={activeTab === "top5"}
           >
             Top5
+          </Tabs.Switcher.Item>
+          <Tabs.Switcher.Item
+            onClick={() => setActiveTab("unsold")}
+            active={activeTab === "unsold"}
+          >
+            Unsold
           </Tabs.Switcher.Item>
         </Tabs.Switcher>
         <Tabs.Tab active={activeTab === "dealers"}>
@@ -170,6 +181,17 @@ function App() {
               }
             </tbody>
           </table>
+        </Tabs.Tab>
+        <Tabs.Tab active={activeTab === "unsold"}>
+          <form>
+            <div className="input">
+              <label>Saleman Name</label>
+              <input
+                value={salemanName}
+                onChange={e => setSalemanName(e.target.value)}
+              />
+            </div>
+          </form>
         </Tabs.Tab>
       </Tabs>
     </div>
