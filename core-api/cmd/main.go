@@ -629,6 +629,36 @@ func main() {
 		})
 	}).Methods(http.MethodGet)
 
+	router.HandleFunc("/salemans/top5", func(w http.ResponseWriter, r *http.Request) {
+		top5List, err := salemansStorage.ShowTop5(r.Context())
+
+		if err != nil {
+			InternalServerError(w, err)
+			return
+		}
+
+		Ok(w, map[string]interface{}{
+			"top5": top5List,
+		})
+	}).Methods(http.MethodGet)
+
+	router.HandleFunc("/salemans/unsold", func(w http.ResponseWriter, r *http.Request) {
+		salemanName := r.URL.Query().Get("saleman_name")
+		leftDate := r.URL.Query().Get("left_date")
+		rightDate := r.URL.Query().Get("right_date")
+
+		unsoldList, err := salemansStorage.UnsoldProduct(r.Context(), salemanName, leftDate, rightDate)
+
+		if err != nil {
+			InternalServerError(w, err)
+			return
+		}
+
+		Ok(w, map[string]interface{}{
+			"unsold": unsoldList,
+		})
+	}).Methods(http.MethodGet)
+
 	router.HandleFunc("/salemans", func(w http.ResponseWriter, r *http.Request) {
 		var saleman salemans.Saleman
 

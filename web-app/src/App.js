@@ -11,6 +11,7 @@ function App() {
   let [dealers, setDealers] = useState([])
   let [salemans, setSalemans] = useState([])
   let [salemaps, setSalemaps] = useState([])
+  let [top5, setTop5] = useState([])
 
   useEffect(() => {
     fetch(BASE_DEALERS_URL).then(res => res.json()).then(json => {
@@ -30,6 +31,13 @@ function App() {
     fetch(BASE_SALEMAPS_URL).then(res => res.json()).then(json => {
       let { salemaps } = json
       setSalemaps(salemaps)
+    })
+  }, [])
+
+  useEffect(() => {
+    fetch(BASE_SALEMANS_URL + "/top5").then(res => res.json()).then(json => {
+      let { top5 } = json
+      setTop5(top5)
     })
   }, [])
 
@@ -55,6 +63,12 @@ function App() {
             active={activeTab === "salemaps"}
           >
             Salemaps
+          </Tabs.Switcher.Item>
+          <Tabs.Switcher.Item
+            onClick={() => setActiveTab("top5")}
+            active={activeTab === "top5"}
+          >
+            Top5
           </Tabs.Switcher.Item>
         </Tabs.Switcher>
         <Tabs.Tab active={activeTab === "dealers"}>
@@ -121,11 +135,35 @@ function App() {
                     <tr key={key}>
                       <td>{salemap.id}</td>
                       <td>{salemap.prod_id}</td>
-                      <td>{salemap.dat}</td>
+                      <td>{salemap.since}</td>
                       <td>{salemap.sub_id}</td>
-                      <td>{salemap.man_code}</td>
+                      <td>{salemap.saleman_id}</td>
                       <td>{salemap.quantity}</td>
-                      <td>{salemap.sale_dat}</td>
+                      <td>{salemap.sale_date}</td>
+                    </tr>
+                  )
+                })
+              }
+            </tbody>
+          </table>
+        </Tabs.Tab>
+        <Tabs.Tab active={activeTab === "top5"}>
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Cash</th>
+                <th>Rank</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                top5.map((top5, key) => {
+                  return (
+                    <tr key={key}>
+                      <td>{top5.name}</td>
+                      <td>{top5.cash}</td>
+                      <td>{top5.rank}</td>
                     </tr>
                   )
                 })
