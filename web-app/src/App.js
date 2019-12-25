@@ -3,6 +3,8 @@ import "./App.css"
 import Tabs from "./Tabs"
 
 const BASE_DEALERS_URL = "http://localhost:8080/dealers"
+const BASE_DEALS_URL = "http://localhost:8080/deals"
+const BASE_PRICELIST_URL = "http://localhost:8080/pricelist"
 const BASE_SALEMANS_URL = "http://localhost:8080/salemans"
 const BASE_SALEMAPS_URL = "http://localhost:8080/salemaps"
 
@@ -11,6 +13,8 @@ function App() {
   let [dealers, setDealers] = useState([])
   let [salemans, setSalemans] = useState([])
   let [salemaps, setSalemaps] = useState([])
+  let [deals, setDeals] = useState([])
+  let [pricelists, setPricelist] = useState([])
   let [top5, setTop5] = useState([])
   let [unsold, setUnsold] = useState([])
   let [salemanName, setSalemanName] = useState("")
@@ -39,12 +43,25 @@ function App() {
   }, [])
 
   useEffect(() => {
+    fetch(BASE_DEALS_URL).then(res => res.json()).then(json => {
+      let { deals } = json
+      setDeals(deals)
+    })
+  }, [])
+
+  useEffect(() => {
+    fetch(BASE_PRICELIST_URL).then(res => res.json()).then(json => {
+      let { pricelist } = json
+      setPricelist(pricelist)
+    })
+  }, [])
+
+  useEffect(() => {
     fetch(BASE_SALEMANS_URL + "/top5").then(res => res.json()).then(json => {
       let { top5 } = json
       setTop5(top5)
     })
   }, [])
-
 
   useEffect(() => {
     fetch(`${BASE_SALEMANS_URL}/unsold?saleman_name=${salemanName}&left_date=${leftDate}&right_date=${rightDate}`).then(res => res.json()).then(json => {
@@ -62,6 +79,18 @@ function App() {
             active={activeTab === "dealers"}
           >
             Dealers
+          </Tabs.Switcher.Item>
+          <Tabs.Switcher.Item
+            onClick={() => setActiveTab("deals")}
+            active={activeTab === "deals"}
+          >
+            Deals
+          </Tabs.Switcher.Item>
+          <Tabs.Switcher.Item
+            onClick={() => setActiveTab("pricelist")}
+            active={activeTab === "pricelist"}
+          >
+            Pricelist
           </Tabs.Switcher.Item>
           <Tabs.Switcher.Item
             onClick={() => setActiveTab("salemans")}
@@ -92,8 +121,11 @@ function App() {
           <table className="table">
             <thead>
               <tr>
+                <th>ID</th>
                 <th>Name</th>
                 <th>Address</th>
+                <th>Phone</th>
+                <th>StatusID</th>
               </tr>
             </thead>
             <tbody>
@@ -101,8 +133,61 @@ function App() {
                 dealers.map((dealer, key) => {
                   return (
                     <tr key={key}>
+                      <td>{dealer.id}</td>
                       <td>{dealer.name}</td>
                       <td>{dealer.address}</td>
+                      <td>{dealer.phone}</td>
+                      <td>{dealer.status_id}</td>
+                    </tr>
+                  )
+                })
+              }
+            </tbody>
+          </table>
+        </Tabs.Tab>
+        <Tabs.Tab active={activeTab === "deals"}>
+          <table className="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Started At</th>
+                <th>Finished At</th>
+                <th>CustumerID</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                deals.map((deal, key) => {
+                  return (
+                    <tr key={key}>
+                      <td>{deal.id}</td>
+                      <td>{deal.started_at}</td>
+                      <td>{deal.finished_at}</td>
+                      <td>{deal.sub_id}</td>
+                    </tr>
+                  )
+                })
+              }
+            </tbody>
+          </table>
+        </Tabs.Tab>
+        <Tabs.Tab active={activeTab === "pricelist"}>
+          <table className="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Since</th>
+                <th>Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                pricelists.map((pricelist, key) => {
+                  return (
+                    <tr key={key}>
+                      <td>{pricelist.id}</td>
+                      <td>{pricelist.since}</td>
+                      <td>{pricelist.price}</td>
                     </tr>
                   )
                 })
@@ -114,7 +199,11 @@ function App() {
           <table className="table">
             <thead>
               <tr>
+                <th>ID</th>
                 <th>Name</th>
+                <th>Pincode</th>
+                <th>DealerID</th>
+                <th>StatusID</th>
                 <th>Condition</th>
               </tr>
             </thead>
@@ -123,7 +212,11 @@ function App() {
                 salemans.map((saleman, key) => {
                   return (
                     <tr key={key}>
+                      <td>{saleman.id}</td>
                       <td>{saleman.name}</td>
+                      <td>{saleman.code}</td>
+                      <td>{saleman.dealer_id}</td>
+                      <td>{saleman.status_id}</td>
                       <td>{saleman.condition}</td>
                     </tr>
                   )
